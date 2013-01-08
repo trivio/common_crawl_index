@@ -1,5 +1,4 @@
-![Trivio Logo](/trivio/common_crawl_index/blob/master/docs/project_header_.png?raw=true)
-
+![Trivio Logo](/trivio/common_crawl_index/blob/master/docs/project_header.png?raw=true)
 
 
 Common Crawl URL Index
