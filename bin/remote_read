@@ -60,8 +60,8 @@ if __name__ == "__main__":
   mmap = BotoMap(
     '<YOUR AWS KEY>',
     '<YOUR AWS SECRET>',
-    '<S3 BUCKET>',
-    '<S3 KEY>'
+    'aws-publicdatasets',
+    '/common-crawl/projects/url-index/url-index.1356128792'
   )
   
   reader = PBTreeDictReader(
