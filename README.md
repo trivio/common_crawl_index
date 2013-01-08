@@ -163,12 +163,13 @@ Once you've found the first data block.
 
 ###Retrieving a page
 
-The location pointer represents 4 numbers:
+The location pointer represents 5 numbers:
 
 * segment id
 * file date
 * partition
 * file offset
+* compressed sized
 
 Using the first 3 numbers you can construct the URL of the arc file that contains the page you are interested in.
 
@@ -176,5 +177,31 @@ Using the first 3 numbers you can construct the URL of the arc file that contain
  s3://aws-publicdatasets/common-crawl/parse-output/segment/[segment id]/[file date]_[partition].arc.gz
 ```
 
-Unzip the file and seek to the file offset
+The file offset and compressed size can be used to fetch the compressed chunk from the arc file, without
+downloading the entire arc file.
+
+Here is an example using the boto library in python to retreive and uncompress the chunk.
+
+
+
+```python
+def arc_file(s3, bucket, info):
+
+  bucket = s3.lookup(bucket)
+  keyname = "/common-crawl/parse-output/segment/{arcSourceSegmentId}/{arcFileDate}_{arcFileParition}.
+arc.gz".format(**info)
+  key = bucket.lookup(keyname)
+  
+  start = info['arcFileOffset']
+  end = start + info['compressedSize'] - 1
+  
+  headers={'Range' : 'bytes={}-{}'.format(start, end)}
+  
+  chunk = StringIO(
+    key.get_contents_as_string(headers=headers)
+  )
+  
+  return GzipFile(fileobj=chunk).read()
+```
+ 
 
