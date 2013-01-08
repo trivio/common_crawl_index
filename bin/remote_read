@@ -66,16 +66,16 @@ if __name__ == "__main__":
   
   reader = PBTreeDictReader(
     mmap,
-    value_format="<QQIQ", 
+    value_format="<QQIQI", 
     item_keys=(
       'arcSourceSegmentId',
       'arcFileDate',
       'arcFileParition',
-      'arcFileOffset'
+      'arcFileOffset',
+      'compressedSize'
     )
   )
   
-
   try:
     for url, d in reader.itemsiter(sys.argv[1]):
       print url,d
