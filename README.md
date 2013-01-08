@@ -106,8 +106,8 @@ Just like index blocks, data blocks are padded with &lt;null&gt; bytes, when dur
 
 A &lt;url&gt; consists of one or more characters terminated by the null byte. 
   
-The location pointer is 28 bytes long and can be interpreted as follows. The first 8 bytes represents the segment id, the next 8 bytes represents the ARC file creation date, followed by 4 bytes that represent the ARC file partition and then finally the last 8 bytes represent  the offset within the ARC file
-where the page can be found.
+The location pointer is 32 bytes long and can be interpreted as follows. The first 8 bytes represents the segment id, the next 8 bytes represents the ARC file creation date, followed by 4 bytes that represent the ARC file partition, followed by 8 bytes that represent the offset within the ARC file and then
+finally the last 4 bytes represent the size of compressed data stored inside the ARC file.
 
 See the the section on retrieving a page, to put all this information together to access a page.
 
@@ -156,7 +156,7 @@ Once you've found the first data block.
 
 1. Retrieve the given block number
 2. Read all characters up to the first &lt;null&gt; byte
-3. Read the  28 byte location pointer
+3. Read the  32 byte location pointer
 4. Repeat steps 1-3; as long as the URL is greater than the target or you reach the end of the block. If you reach the end of the block without finding the target, it is not in the index.
 5. Now read each item out of the data block, until each item url no longer starts with the target string.
 
