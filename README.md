@@ -1,9 +1,7 @@
-![Trivio Logo](/trivio/common_crawl_index/blob/master/docs/project_header_.png?raw=true)
+![Trivio Logo](/trivio/common_crawl_index/blob/master/docs/project_header.png?raw=true)
 
-
-
-Common Crawl URL Index
 ==================
+
 The Common Crawl data  is composed of billions of  pages randomly crawled from the internet. Each page is archived with thousands of other pages into an archive file, commonly known as an ARC file. There are hundreds of thousands of these archives and the pages are stored essentially randomly distributed and unordered within these archives. 
 
 
