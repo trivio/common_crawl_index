@@ -180,7 +180,7 @@ Using the first 3 numbers you can construct the URL of the arc file that contain
 The file offset and compressed size can be used to fetch the compressed chunk from the arc file, without
 downloading the entire arc file.
 
-Here is an example in python showing how to retreive and uncompress the chunk in python.
+Here is an example in python showing how to retreive and uncompress the chunk.
 
 
 
