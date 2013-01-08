@@ -1,10 +1,10 @@
-![Trivio Logo](http://www.triv.io/images/trivio_logo.png)
+![Trivio Logo](/trivio/common_crawl_index/blob/master/docs/project_header_.png?raw=true)
 
 
 
 Common Crawl URL Index
 ==================
-The Common Crawl data  is composed of 5 Billion  (and growing) pages randomly crawled from the internet. Each page is archived with thousands of other pages into an archive file, commonly known as an ARC file. There are hundreds of thousands of these archives and the pages are stored essentially randomly distributed and unordered within these archives. 
+The Common Crawl data  is composed of billions of  pages randomly crawled from the internet. Each page is archived with thousands of other pages into an archive file, commonly known as an ARC file. There are hundreds of thousands of these archives and the pages are stored essentially randomly distributed and unordered within these archives. 
 
 
 Without an index, even if you know a pages URL, you're forced to download, uncompress and each of the archives until you locate the pages you're are interested in.
@@ -35,9 +35,9 @@ Specifically:
 
 4. There's a large community with a variety of tools interested in accessing the index.
 
-5. Common Crawl is a non profit, it's especially important to keep hosting
-costs down while ensuring the data is highly available.
+5. Common Crawl is a non profit, it's especially important to keep processing and hosting costs down while ensuring the data is highly available.
 
+Since 2012, the Common Crawl data has been hosted for free by Amazon on the Amazon Public Data Sets. The Amazon Public Data Set program is a boon to everyone who uses data - it lowers the overhead costs for organizations that want to share data, lowers the cost for users to download open data, and makes valuable data sets more discoverable.
 
 Putting this altogether leads to the following goals.
 
@@ -51,7 +51,7 @@ Goals:
   * You can search for any URL, URL prefix, subdomain or top-level domain.
   * Once you've determined the approximate location of the URL you're
   interested in you can sequentially read other similar urls.
-  * It should be easy to access the index from any programming language *This the main reason we opted to roll our own format rather than rely on a third party library*
+  * It should be easy to access the index from any programming language *This the main reason we opted to roll our own format rather than rely on a third party library
 
 
 File Format
@@ -61,7 +61,7 @@ The file format is based on a [Prefixed B-tree](http://ict.pue.udlap.mx/people/c
 
 Conceptually the index is organized into a b+ tree like this.
 
-![Tree](/srobertson/common_crawl_index/blob/master/docs/tree.png?raw=true)
+![Tree](/trivio/common_crawl_index/blob/master/docs/tree.png?raw=true)
 
 To access any given URL in the index, you  start by reading the root block in the tree and then follow the pointers to zero or more other index blocks and finally to a data block. The urls is the data block are stored in lexicographic order. So for  a url of `http://example.com/page1.html` will come before `http://example.com/page2.html`. Because of this property you
 can find all the pages that share a common prefix by subsequently reading
@@ -71,7 +71,7 @@ each url in the data portion of the file.
 ###File overview
 The entire index plus data are stored in one file that has 3 major parts. **The header**, **index blocks** and **data blocks** as depicted below.
 
-![File Overview](/srobertson/common_crawl_index/blob/master/docs/file_overview.png?raw=true)
+![File Overview](/trivio/common_crawl_index/blob/master/docs/file_overview.png?raw=true)
 
 
 ###Header
@@ -79,7 +79,7 @@ The header is exactly 8 bytes long. The first 4 bytes represents the **block siz
 
 All numbers are encoded in little-endian order
 
-![Header](/srobertson/common_crawl_index/blob/master/docs/header.png?raw=true)
+![Header](/trivio/common_crawl_index/blob/master/docs/header.png?raw=true)
 
 Once you have the block size and block count you can randomly access any block by following the instructions in the Operations section of this guide.
 
@@ -89,7 +89,7 @@ Interpreting a block depends on whether it is a **Index block** or a **Data bloc
 ###Index block
 Any block number that is less than the block count in the header is considered an index block. It is interpreted as follows:
 
-![Index Block](/srobertson/common_crawl_index/blob/master/docs/index_block.png?raw=true)
+![Index Block](/trivio/common_crawl_index/blob/master/docs/index_block.png?raw=true)
 
 An index block always starts with 4 byte &lt;block number&gt; then one or more &lt;prefix&gt; &lt;null&gt; &lt;block number&gt; triplets until the next triplet can not fit within the block, at which point it is padded with additional &lt;null&gt; bytes.
   
@@ -103,7 +103,7 @@ Data blocks consist of oner or more &lt;url&gt; &lt;null&gt; &lt;location pointe
 
 Just like index blocks, data blocks are padded with &lt;null&gt; bytes, when during construction, the next item  can not fit within the given block size.
 
-![Data Block](/srobertson/common_crawl_index/blob/master/docs/data_block.png?raw=true)
+![Data Block](/trivio/common_crawl_index/blob/master/docs/data_block.png?raw=true)
 
 
 A &lt;url&gt; consists of one or more characters terminated by the null byte. 
