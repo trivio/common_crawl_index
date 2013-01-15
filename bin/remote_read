@@ -72,7 +72,7 @@ if __name__ == "__main__":
     item_keys=(
       'arcSourceSegmentId',
       'arcFileDate',
-      'arcFileParition',
+      'arcFilePartition',
       'arcFileOffset',
       'compressedSize'
     )
