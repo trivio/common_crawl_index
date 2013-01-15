@@ -23,12 +23,14 @@ sys.path.append(join(dirname(__file__), '..'))
 
 from lib.pbtree import IndexBlockReader, PBTreeDictReader
 
-
 import boto
 
 class BotoMap(object):
-  def __init__(self, access_key, access_secret, bucket, key_name):
-    self.conn  = boto.connect_s3(access_key,access_secret)
+  def __init__(self, bucket, key_name, access_key=None, access_secret=None ):
+    if access_key and access_secret:
+      self.conn  = boto.connect_s3(access_key,access_secret)
+    else:
+      self.conn  = boto.connect_s3(anon=True)
     bucket = self.conn.lookup(bucket)
     self.key = bucket.lookup(key_name)
     self.block_size = 2**16
@@ -58,8 +60,8 @@ class BotoMap(object):
     
 if __name__ == "__main__":
   mmap = BotoMap(
-    '<YOUR AWS KEY>',
-    '<YOUR AWS SECRET>',
+#    '<YOUR AWS KEY>',
+#    '<YOUR AWS SECRET>',
     'aws-publicdatasets',
     '/common-crawl/projects/url-index/url-index.1356128792'
   )
