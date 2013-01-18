@@ -21,7 +21,7 @@ import mmap
 from  os.path import join, dirname
 sys.path.append(join(dirname(__file__), '..'))
 
-from streams.pbtree import PBTreeDictReader
+from libs.pbtree import PBTreeDictReader
 
 
 def main():
@@ -34,8 +34,9 @@ def main():
     item_keys=(
       'arcSourceSegmentId',
       'arcFileDate',
-      'arcFileParition',
-      'arcFileOffset'
+      'arcFilePartition',
+      'arcFileOffset',
+      'compressedSize'
     )
   )
 
