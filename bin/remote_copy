@@ -124,8 +124,8 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser(description="Copy common-crawl webpages from a given domain or comma-delimited list of domains to an s3 location specified by the user.")
     argparser.add_argument('command', choices=['check', 'copy'], help='check to list # of webpages in index for given domain; copy to copy those webpages to an s3 location')
     argparser.add_argument('domain', help='domain or comma-delimited list of domains to check/copy from the index')
-    argparser.add_argument('-b', '--bucket', required=True, help='webpages stored in s3://<bucket>/<key>/<process-id>.gz (multiple files if parallel > 1)')
-    argparser.add_argument('-k', '--key', required=True, help='webpages stored in s3://<bucket>/<key>/<process-id>.gz (multiple files if parallel > 1)')
+    argparser.add_argument('-b', '--bucket', help='webpages stored in s3://<bucket>/<key>/<process-id>.gz (multiple files if parallel > 1)')
+    argparser.add_argument('-k', '--key', help='webpages stored in s3://<bucket>/<key>/<process-id>.gz (multiple files if parallel > 1)')
     argparser.add_argument('-p', '--parallel', type=int, default=4, help='how many parallel processes to run (default = 4)')
     argparser.add_argument('-O', '--aws-access-key', default=environ.get('AWS_ACCESS_KEY', None), help='AWS Access Key ID. Defaults to the value of the AWS_ACCESS_KEY environment variable (if set).')
     argparser.add_argument('-W', '--aws-secret-key', default=environ.get('AWS_SECRET_KEY', None), help='AWS Secret Access Key. Defaults to the value of the AWS_SECRET_KEY environment variable (if set).')
@@ -135,6 +135,12 @@ if __name__ == "__main__":
         argparser.error("Error: neither --aws-access-key option nor AWS_ACCESS_KEY environment variable set")
     if not args.aws_secret_key:
         argparser.error("Error: neither --aws-secret-key option nor AWS_SECRET_KEY environment variable set")
+
+    if args.command == "copy":
+        if not args.bucket:
+            argparser.error("Error: --bucket option is required for copy operation")
+        if not args.key:
+            argparser.error("Error: --key option is required for copy operation")
 
     s3_anon = boto.connect_s3(anon=True)
 
