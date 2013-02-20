@@ -204,4 +204,22 @@ arc.gz".format(**info)
   return GzipFile(fileobj=chunk).read()
 ```
  
+### Using the remote_copy utility script
+
+bin/remote_copy is a utility script which takes a domain or comma-separated list of domains, 
+uses the index to find the webpages in the crawl belonging to the given domains, 
+downloads them (to get just the bytes corresponding to the webpages from the 100 MB segment files), 
+and reuploads them to a specified S3 location. It uses python multiprocessing to make several 
+requests in parallel.
+
+The "check" command will give stats such as number of webpages and total file size for a list of domains. 
+The "copy" command will download the webpages from aws-publicdatasets and reupload to a specified S3 location.
+
+Example usage:
+
+    chmod +x bin/remote_copy
+    export AWS_ACCESS_KEY=<your aws access key>
+    export AWS_SECRET_KEY=<your aws secret key>
+    bin/remote_copy check "com.nytimes.blogs.fivethirtyeight, com.nytimes.blogs.thecaucus"
+    bin/remote_copy copy "com.nytimes.blogs.fivethirtyeight, com.nytimes.blogs.thecaucus" --bucket your-output-bucket --key common_crawl/blogs_crawl --parallel 4 
 

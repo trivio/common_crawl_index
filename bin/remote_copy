@@ -15,6 +15,7 @@
 
 import argparse
 import boto
+import os
 import sys
 import struct
 import tempfile
@@ -24,9 +25,8 @@ import traceback
 from datetime import timedelta
 from itertools import chain
 from multiprocessing import Pool, Queue
-from os import environ, getpid
-from os.path import join, dirname
-sys.path.append(join(dirname(__file__), '..'))
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from lib.pbtree import IndexBlockReader, PBTreeDictReader
 
@@ -94,7 +94,7 @@ def copy_arc_files(index_results):
                 copy_arc_files.progress_queue.put(("warning", "WARNING: could not find key " + src_keyname))
             copy_arc_files.progress_queue.put(("download", key_info['compressedSize']))
 
-        dest_keyname = '/' + copy_arc_files.dest_keystem + '/' + str(getpid()) + ".gz"
+        dest_keyname = '/' + copy_arc_files.dest_keystem + '/' + str(os.getpid()) + ".gz"
         dest_key = dest_bucket.new_key(dest_keyname)
 
         upload_bytes = chunk.tell()
@@ -104,7 +104,7 @@ def copy_arc_files(index_results):
         copy_arc_files.progress_queue.put(("upload", upload_bytes))
     except:
         print ""
-        print "ERROR, pid=" + str(getpid())
+        print "ERROR, pid=" + str(os.getpid())
         print traceback.format_exc()
         copy_arc_files.progress_queue.put(("error", None))
 
@@ -123,12 +123,12 @@ def partition(li, n):
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser(description="Copy common-crawl webpages from a given domain or comma-delimited list of domains to an s3 location specified by the user.")
     argparser.add_argument('command', choices=['check', 'copy'], help='check to list # of webpages in index for given domain; copy to copy those webpages to an s3 location')
-    argparser.add_argument('domain', help='domain or comma-delimited list of domains to check/copy from the index')
+    argparser.add_argument('domains', help='domain or comma-delimited list of domains to check/copy from the index')
     argparser.add_argument('-b', '--bucket', help='webpages stored in s3://<bucket>/<key>/<process-id>.gz (multiple files if parallel > 1)')
     argparser.add_argument('-k', '--key', help='webpages stored in s3://<bucket>/<key>/<process-id>.gz (multiple files if parallel > 1)')
     argparser.add_argument('-p', '--parallel', type=int, default=4, help='how many parallel processes to run (default = 4)')
-    argparser.add_argument('-O', '--aws-access-key', default=environ.get('AWS_ACCESS_KEY', None), help='AWS Access Key ID. Defaults to the value of the AWS_ACCESS_KEY environment variable (if set).')
-    argparser.add_argument('-W', '--aws-secret-key', default=environ.get('AWS_SECRET_KEY', None), help='AWS Secret Access Key. Defaults to the value of the AWS_SECRET_KEY environment variable (if set).')
+    argparser.add_argument('-O', '--aws-access-key', default=os.environ.get('AWS_ACCESS_KEY', None), help='AWS Access Key ID. Defaults to the value of the AWS_ACCESS_KEY environment variable (if set).')
+    argparser.add_argument('-W', '--aws-secret-key', default=os.environ.get('AWS_SECRET_KEY', None), help='AWS Secret Access Key. Defaults to the value of the AWS_SECRET_KEY environment variable (if set).')
     args = argparser.parse_args()
 
     if not args.aws_access_key:
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     src_keys = set()
     index_results = []
 
-    domains = [reader.itemsiter(s.strip()) for s in sys.argv[2].split(',')]
+    domains = [reader.itemsiter(s.strip()) for s in args.domains.split(',')]
     for url, index_data in chain.from_iterable(domains):
         src_keys.add(src_keystem.format(**index_data))
         index_results.append(index_data)
@@ -184,7 +184,12 @@ if __name__ == "__main__":
     print "Destination compressed file size (MB): " + str(dest_compressed_size_mb)
     print ""
 
-    if sys.argv[1] == "copy":
+    if args.command == "copy":
+        if len(index_results) == 0:
+            print "No webpages found for domains \"" + str(args.domains) + "\""
+            print ""
+            exit()
+
         print "Starting copy..."
         copy_start_time = time.time()
             
