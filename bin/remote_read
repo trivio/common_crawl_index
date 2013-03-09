@@ -49,7 +49,7 @@ class BotoMap(object):
   def fetch(self, start, end):
     try:
       return self.key.get_contents_as_string(
-        headers={'Range' : 'bytes={}-{}'.format(start, end)}
+        headers={'Range' : 'bytes={0}-{1}'.format(start, end)}
       )
     except boto.exception.S3ResponseError, e:
       # invalid range, we've reached the end of the file
