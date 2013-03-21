@@ -21,7 +21,7 @@ import mmap
 from  os.path import join, dirname
 sys.path.append(join(dirname(__file__), '..'))
 
-from libs.pbtree import PBTreeDictReader
+from lib.pbtree import PBTreeDictReader
 
 
 def main():
