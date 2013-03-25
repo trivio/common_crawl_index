@@ -7,8 +7,9 @@ The Common Crawl data  is composed of billions of  pages randomly crawled from t
 
 Without an index, even if you know a pages URL, you're forced to download, uncompress and each of the archives until you locate the pages you're are interested in.
 
-Using the index described here, you can find all the archive files that contain pages for a give URL prefix, subdomain or top level domain with no more than 3 small network requests.
-
+Using the index described here, you can find all the archive files that contain pages for a give URL prefix, subdomain or top level domain with no more than 3 small network requests. There is also a utility script bin/remote_copy 
+(documented at the bottom of this readme) which uses the index to copy all the webpages from a specified list of domains 
+to an S3 location of your choosing.
 
 
 Challenges
@@ -204,4 +205,23 @@ arc.gz".format(**info)
   return GzipFile(fileobj=chunk).read()
 ```
  
+### Using the remote_copy utility script
+
+bin/remote_copy is a utility script which takes a domain or comma-separated list of domains, 
+uses the index to find the webpages in the crawl belonging to the given domains, 
+downloads them (to get just the bytes corresponding to the webpages from the 100 MB segment files), 
+and reuploads them to a specified S3 location. It uses python multiprocessing to make several 
+requests in parallel. As this still takes a lot of bandwidth, it is recommended that you run it 
+on an m1.xlarge EC2 instance for a fast connection to S3.
+
+The "check" command will give stats such as number of webpages and total file size for a list of domains. 
+The "copy" command will download the webpages from aws-publicdatasets and reupload to a specified S3 location.
+
+Example usage:
+
+    chmod +x bin/remote_copy
+    export AWS_ACCESS_KEY=<your aws access key>
+    export AWS_SECRET_KEY=<your aws secret key>
+    bin/remote_copy check "com.nytimes.blogs.fivethirtyeight, com.nytimes.blogs.thecaucus"
+    bin/remote_copy copy "com.nytimes.blogs.fivethirtyeight, com.nytimes.blogs.thecaucus" --bucket your-output-bucket --key common_crawl/blogs_crawl --parallel 4 
 
